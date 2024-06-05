@@ -70,7 +70,9 @@ def code_block_to_html(code_block):
 def quote_block_to_html(quote_block):    
     children = list()
     for line in quote_block.split("\n"):
-        children.append(TextNode(line, TextTypes.TEXT))
+        if not line.startswith("> "):
+            raise ValueError("quote_block does not contain a valid markdown quotation")
+        children.append(TextNode(line.lstrip("> "), TextTypes.TEXT))
 
     return ParentNode("blockquote", children)
 
@@ -82,23 +84,19 @@ def unordered_list_block_to_html(unordered_list_block):
             raise ValueError("unordered_list_block does not contiain a valid unordered list")
         children.append(LeafNode('li', line.lstrip("* ")))
 
-    return ParentNode("ul", ParentNode("code", children))
+    return ParentNode("ul", children)
 
 def ordered_list_block_to_html(ordered_list_block):
     children = list()
     for line in ordered_list_block.split("\n"):
         children.append(LeafNode('li', line[3:]))
 
-    return ParentNode("ol", ParentNode("code", children))
+    return ParentNode("ol", children)
 
-def markdown_to_html(markdown):
+def markdown_to_html_node(markdown):
     pass
+    
 
 # Debugging 
 if __name__ == "__main__":
-    code_test_1 = "```python\nprint('hello world')\n```"
-    expected_code_test_1_output = ParentNode("pre", ParentNode("code", [
-        TextNode("print('hello world')", TextTypes.TEXT)
-    ]))
-    print(code_block_to_html(code_test_1))
-    print(expected_code_test_1_output)
+    pass
