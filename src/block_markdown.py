@@ -54,7 +54,7 @@ def header_block_to_html(header_block):
     except IndexError:
         raise ValueError("header_block does not contain a valid markdown header")
     
-    return LeafNode(f"h{header.count("#")}", text)
+    return LeafNode(f"h{header.count('#')}", text)
 
 def code_block_to_html(code_block):
     lines = code_block.split("\n")
@@ -72,14 +72,24 @@ def quote_block_to_html(quote_block):
     for line in quote_block.split("\n"):
         children.append(TextNode(line, TextTypes.TEXT))
 
-    return ParentNode("pre", ParentNode("code", children))
+    return ParentNode("blockquote", children)
 
 
 def unordered_list_block_to_html(unordered_list_block):
-    pass
+    children = list()
+    for line in unordered_list_block.split("\n"):
+        if not line.startswith("* "):
+            raise ValueError("unordered_list_block does not contiain a valid unordered list")
+        children.append(LeafNode('li', line.lstrip("* ")))
+
+    return ParentNode("ul", ParentNode("code", children))
 
 def ordered_list_block_to_html(ordered_list_block):
-    pass
+    children = list()
+    for line in ordered_list_block.split("\n"):
+        children.append(LeafNode('li', line[3:]))
+
+    return ParentNode("ol", ParentNode("code", children))
 
 def markdown_to_html(markdown):
     pass

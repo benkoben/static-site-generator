@@ -1,6 +1,6 @@
 import unittest
 
-from block_markdown import markdown_to_blocks, block_to_block_type, BlockTypes, header_block_to_html, code_block_to_html
+from block_markdown import markdown_to_blocks, block_to_block_type, BlockTypes, header_block_to_html, code_block_to_html, unordered_list_block_to_html
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import TextNode, TextTypes
@@ -114,3 +114,26 @@ This is the same paragraph on a new line
                 self.assertEqual(str(e), "header_block does not contain a valid markdown header")
 
         self.assertEqual(code_block_to_html(code_test_1), expected_code_test_1_output)
+    
+    # TODO: Add test for quote blocks
+
+    def test_unordered_list_block_to_html(self):
+        unordered_list_test_1 = "* line 1\n* line2\n* line 3\n* line 4"
+        expected_outcome_1 = ParentNode("ul", [
+            LeafNode('li', "line 1"),
+            LeafNode('li', "line 2"),
+            LeafNode('li', "line 3"),
+            LeafNode('li', "line 4"),
+        ])
+        # invalid
+        unordered_list_test_2 = "* line 1\n* line2\n line 3\n line 4"
+        expected_outcome_2 = "unordered_list_block does not contiain a valid unordered list"
+        
+        # Assert valid cases
+        self.assertEqual(unordered_list_block_to_html(unordered_list_test_1), expected_outcome_1)
+
+        # Assert invalid cases
+        try:
+            unordered_list_block_to_html(unordered_list_test_2)
+        except ValueError as e:
+            self.assertEqual(str(e), expected_outcome_2)
