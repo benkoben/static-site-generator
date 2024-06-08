@@ -1,9 +1,12 @@
 import unittest
 
-from block_markdown import markdown_to_blocks, block_to_block_type, BlockTypes, header_block_to_html, code_block_to_html, unordered_list_block_to_html, quote_block_to_html, ordered_list_block_to_html
+from block_markdown import *
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import TextNode, TextTypes
+
+# Show full diff in unittest
+unittest.util._MAX_LENGTH=2000
 
 class TestTextNode(unittest.TestCase):
 
@@ -173,5 +176,77 @@ This is the same paragraph on a new line
         # Assert invalid cases
         try:
             ordered_list_block_to_html(ordered_list_test_2)
+        except ValueError as e:
+            self.assertEqual(str(e), expected_outcome_2)
+
+    def test_paragraph_block_to_html(self):
+        paragraph_test_1 = "This is a nice little paragraph\nWith a newline.\nBut newlines are ignored by the browser."
+        expected_outcome_1 = LeafNode('p', "This is a nice little paragraph\nWith a newline.\nBut newlines are ignored by the browser.")
+
+        self.assertEqual(paragraph_block_to_html(paragraph_test_1), expected_outcome_1)
+
+    def test_markdown_to_html_node(self):
+        markdown_blocks_test_1 = """
+# Test document
+
+This is **bolded** paragraph
+
+This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line
+
+* This is a list
+* with items
+
+```
+print('This is a code block')
+```
+
+## Heading two block
+
+1. This is
+2. a
+3. ordered list block
+"""
+        expected_outcome_1 = ParentNode("div",
+            children=[
+                LeafNode("h1", "Test document"),
+                LeafNode("p", "This is **bolded** paragraph"),
+                LeafNode("p", """This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line"""),
+                ParentNode("ul", [
+                    LeafNode("li", "This is a list"),
+                    LeafNode("li", "with items")]
+                ),
+                ParentNode("pre", ParentNode("code", [
+                    TextNode("print('This is a code block')", TextTypes.TEXT)
+                ])),
+                LeafNode("h2", "Heading two block"),
+                ParentNode("ol", [
+                    LeafNode("li", "This is"),
+                    LeafNode("li", "a"),
+                    LeafNode("li", "ordered list block")
+                ]),
+            ]                       
+        )
+        markdown_blocks_test_2 = """
+# Test document
+
+This is **bolded** paragraph
+
+This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line
+
+* This is a list
+* with items
+
+```
+print(
+"""
+        expected_outcome_2 = "code_block is missing opening/closing characters \"```\""
+
+        self.assertEqual(markdown_to_html_node(markdown_blocks_test_1), expected_outcome_1)
+
+        try:
+            markdown_to_html_node(markdown_blocks_test_2)
         except ValueError as e:
             self.assertEqual(str(e), expected_outcome_2)

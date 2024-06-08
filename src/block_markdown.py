@@ -96,8 +96,35 @@ def ordered_list_block_to_html(ordered_list_block):
 
     return ParentNode("ol", children)
 
+# I 
+def paragraph_block_to_html(paragraph_block):
+    return LeafNode("p", paragraph_block)
+
 def markdown_to_html_node(markdown):
-    pass
+    children = list()
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)
+
+        if block_type == BlockTypes.HEADING:
+            children.append(header_block_to_html(block))
+            
+        elif block_type == BlockTypes.CODE:
+            children.append(code_block_to_html(block))
+
+        elif block_type == BlockTypes.QUOTE:
+            children.append(quote_block_to_html(block))
+
+        elif block_type == BlockTypes.UNORDERED_LIST:
+            children.append(unordered_list_block_to_html(block))
+
+        elif block_type == BlockTypes.ORDERED_LIST:
+            children.append(ordered_list_block_to_html(block))
+
+        else:
+            children.append(paragraph_block_to_html(block))
+
+    return ParentNode("div", children)
     
 
 # Debugging 
