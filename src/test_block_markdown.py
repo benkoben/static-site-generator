@@ -1,6 +1,6 @@
 import unittest
 
-from block_markdown import markdown_to_blocks, block_to_block_type, BlockTypes, header_block_to_html, code_block_to_html, unordered_list_block_to_html, quote_block_to_html
+from block_markdown import markdown_to_blocks, block_to_block_type, BlockTypes, header_block_to_html, code_block_to_html, unordered_list_block_to_html, quote_block_to_html, ordered_list_block_to_html
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import TextNode, TextTypes
@@ -144,7 +144,7 @@ This is the same paragraph on a new line
         ])
         # invalid
         unordered_list_test_2 = "* line 1\n* line2\n line 3\n line 4"
-        expected_outcome_2 = "unordered_list_block does not contiain a valid unordered list"
+        expected_outcome_2 = "unordered_list_block does not contain a valid unordered list"
         
         # Assert valid cases
         self.assertEqual(unordered_list_block_to_html(unordered_list_test_1), expected_outcome_1)
@@ -152,5 +152,26 @@ This is the same paragraph on a new line
         # Assert invalid cases
         try:
             unordered_list_block_to_html(unordered_list_test_2)
+        except ValueError as e:
+            self.assertEqual(str(e), expected_outcome_2)
+
+    def test_ordered_list_block_to_html(self):
+        ordered_list_test_1 = "1. line 1\n2. line 2\n3. line 3\n4. line 4"
+        expected_outcome_1 = ParentNode("ol", [
+            LeafNode('li', "line 1"),
+            LeafNode('li', "line 2"),
+            LeafNode('li', "line 3"),
+            LeafNode('li', "line 4"),
+        ])
+        # invalid
+        ordered_list_test_2 = "1. line 1\n line2\n3. line 3\n4. line 4"
+        expected_outcome_2 = "ordered_list_block does not contain a valid ordered list"
+        
+        # Assert valid cases
+        self.assertEqual(ordered_list_block_to_html(ordered_list_test_1), expected_outcome_1)
+
+        # Assert invalid cases
+        try:
+            ordered_list_block_to_html(ordered_list_test_2)
         except ValueError as e:
             self.assertEqual(str(e), expected_outcome_2)

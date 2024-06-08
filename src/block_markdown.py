@@ -81,7 +81,7 @@ def unordered_list_block_to_html(unordered_list_block):
     children = list()
     for line in unordered_list_block.split("\n"):
         if not line.startswith("* "):
-            raise ValueError("unordered_list_block does not contiain a valid unordered list")
+            raise ValueError("unordered_list_block does not contain a valid unordered list")
         children.append(LeafNode('li', line.lstrip("* ")))
 
     return ParentNode("ul", children)
@@ -89,6 +89,9 @@ def unordered_list_block_to_html(unordered_list_block):
 def ordered_list_block_to_html(ordered_list_block):
     children = list()
     for line in ordered_list_block.split("\n"):
+        if not line[0].isdigit() and line[1] != ".":
+            raise ValueError("ordered_list_block does not contain a valid ordered list")
+
         children.append(LeafNode('li', line[3:]))
 
     return ParentNode("ol", children)
