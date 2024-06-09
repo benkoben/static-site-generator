@@ -8,7 +8,7 @@ from textnode import TextNode, TextTypes
 # Show full diff in unittest
 unittest.util._MAX_LENGTH=2000
 
-class TestTextNode(unittest.TestCase):
+class TestBlockMarkdown(unittest.TestCase):
 
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
@@ -94,13 +94,6 @@ This is the same paragraph on a new line
         header_test_8 = "####### This is an invalid header"
         header_test_9 = "This is an invalid header"
 
-        code_test_1 = "```python\nprint('hello world')\n```"
-        expected_code_test_1_output = ParentNode("pre", ParentNode("code", [
-            TextNode("print('hello world')", TextTypes.TEXT)
-        ]))
-        # invalid
-        code_test_2 = "```python\nprint('hello world')\nmissing closing backtics"
-
         # Assert valid cases
         self.assertEqual(header_block_to_html(header_test_1), LeafNode("h1", "This is a h1 header"))
         self.assertEqual(header_block_to_html(header_test_2), LeafNode("h2", "This is a h2 header"))
@@ -116,13 +109,20 @@ This is the same paragraph on a new line
             except ValueError as e:
                 self.assertEqual(str(e), "header_block does not contain a valid markdown header")
 
-        self.assertEqual(code_block_to_html(code_test_1), expected_code_test_1_output)
+        
     
+    def test_code_block_to_html(self):
+        code_test_1 = "```python\nprint('hello world')\n```"
+        expected_code_test_1_output = ParentNode("pre", [ParentNode("code", [LeafNode(value="print('hello world')")])])
+        # invalid
+        code_test_2 = "```python\nprint('hello world')\nmissing closing backtics"
+        self.assertEqual(code_block_to_html(code_test_1), expected_code_test_1_output)
+
     def test_quote_block_to_html(self):
         quote_test_1 = "> this is quoted\n> continuing the quote"
         expected_outcome_1 = ParentNode("blockquote", [
-            TextNode("this is quoted", TextTypes.TEXT),
-            TextNode("continuing the quote", TextTypes.TEXT)
+            LeafNode(value="this is quoted"),
+            LeafNode(value="continuing the quote")
         ])
         # invalid
         quote_test_2 = "> this is quoted\nbreaking the quote with this line"
@@ -217,9 +217,9 @@ This is the same paragraph on a new line"""),
                     LeafNode("li", "This is a list"),
                     LeafNode("li", "with items")]
                 ),
-                ParentNode("pre", ParentNode("code", [
-                    TextNode("print('This is a code block')", TextTypes.TEXT)
-                ])),
+                ParentNode("pre", [ParentNode("code", [
+                    LeafNode(value="print('This is a code block')")
+                ])]),
                 LeafNode("h2", "Heading two block"),
                 ParentNode("ol", [
                     LeafNode("li", "This is"),

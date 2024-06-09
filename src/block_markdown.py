@@ -3,9 +3,8 @@ import re
 from enum import Enum
 from leafnode import LeafNode
 from parentnode import ParentNode
-from textnode import TextNode, TextTypes
 
-HEADER_REGEX = r"(?<!#)(#{1,6})\s(.*)?"
+__HEADER_REGEX = r"(?<!#)(#{1,6})\s(.*)?"
 
 class BlockTypes(Enum):
     PARAGRAPH = "paragraph"
@@ -25,7 +24,7 @@ def block_to_block_type(block):
     lines = block.split("\n")
 
     # Check to see if the block is a header type
-    if re.search(HEADER_REGEX, lines[0]):
+    if re.search(__HEADER_REGEX, lines[0]):
         return BlockTypes.HEADING
     
     # Header blocks
@@ -50,7 +49,7 @@ def block_to_block_type(block):
 
 def header_block_to_html(header_block):
     try:
-        header, text = re.findall(HEADER_REGEX, header_block)[0]
+        header, text = re.findall(__HEADER_REGEX, header_block)[0]
     except IndexError:
         raise ValueError("header_block does not contain a valid markdown header")
     
@@ -63,16 +62,16 @@ def code_block_to_html(code_block):
     
     children = list()
     for line in lines[1:-1]:
-        children.append(TextNode(line, TextTypes.TEXT))
+        children.append(LeafNode(value=line))
 
-    return ParentNode("pre", ParentNode("code", children))
+    return ParentNode("pre", [ParentNode("code", children)])
 
 def quote_block_to_html(quote_block):    
     children = list()
     for line in quote_block.split("\n"):
         if not line.startswith("> "):
             raise ValueError("quote_block does not contain a valid markdown quotation")
-        children.append(TextNode(line.lstrip("> "), TextTypes.TEXT))
+        children.append(LeafNode(value=line.lstrip("> ")))
 
     return ParentNode("blockquote", children)
 
