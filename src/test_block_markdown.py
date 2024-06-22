@@ -210,8 +210,8 @@ print('This is a code block')
         expected_outcome_1 = ParentNode("div",
             children=[
                 LeafNode("h1", "Test document"),
-                LeafNode("p", "This is **bolded** paragraph"),
-                LeafNode("p", """This is another paragraph with *italic* text and `code` here
+                LeafNode("p", "This is <b>bolded</b> paragraph"),
+                LeafNode("p", """This is another paragraph with <i>italic</i> text and <code>code</code> here
 This is the same paragraph on a new line"""),
                 ParentNode("ul", [
                     LeafNode("li", "This is a list"),
@@ -231,9 +231,9 @@ This is the same paragraph on a new line"""),
         markdown_blocks_test_2 = """
 # Test document
 
-This is **bolded** paragraph
+This is <b>bolded</b> paragraph
 
-This is another paragraph with *italic* text and `code` here
+This is another paragraph with <i>italic</i> text and <code>code</code>` here
 This is the same paragraph on a new line
 
 * This is a list
@@ -242,7 +242,7 @@ This is the same paragraph on a new line
 ```
 print(
 """
-        expected_outcome_2 = "code_block is missing opening/closing characters \"```\""
+        expected_outcome_2 = "Expected closing delimiter \"`\" in string \"This is another paragraph with <i>italic</i> text and <code>code</code>` here\nThis is the same paragraph on a new line\" but found none"
 
         self.assertEqual(markdown_to_html_node(markdown_blocks_test_1), expected_outcome_1)
 

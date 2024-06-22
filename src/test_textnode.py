@@ -28,7 +28,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(italic_node.text_node_to_html_node(), LeafNode(tag="i", value="This is an italic node"))
         self.assertEqual(code_node.text_node_to_html_node(), LeafNode(tag="code", value="This is a code node"))
         self.assertEqual(link_node.text_node_to_html_node(), LeafNode(tag="a", value="This is a link node", props={"href": "https://example.com"}))
-        self.assertEqual(image_node.text_node_to_html_node(), LeafNode(tag="img", props={"alt": "This is a image node", "src": "https://example.image.com"}))
+        self.assertEqual(image_node.text_node_to_html_node(), LeafNode(tag="img", value="This is a image node", props={"alt": "This is a image node", "src": "https://example.image.com"}))
         
         # assertions that check for raised errors
         try:
