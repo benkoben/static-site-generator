@@ -24,7 +24,7 @@ class TestParentNode(unittest.TestCase):
         )
         self.assertEqual(
             node_without_errors.to_html(), 
-            "<p><b>Bold text</b>Normal text<th><td>table data</td><td>table data</td></th><i>italic text</i>Normal text</p>"
+            "<p><b>Bold text</b>\nNormal text<th><td>table data</td><td>table data</td></th>\n<i>italic text</i>\nNormal text</p>"
         )
 
     def test_children(self):

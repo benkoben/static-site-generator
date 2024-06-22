@@ -7,7 +7,7 @@ def extract_markdown_images(text):
     return re.findall(image_regex, text)
 
 def extract_markdown_links(text):
-    links_regex = r"[^!]\[(.*?)\]\((.*?)\)"
+    links_regex = r"[^!]?\[(.*?)\]\((.*?)\)"
     return re.findall(links_regex, text)
 
 # TODO: Implement a way to split nested nodes by dynamically detecting delimiters
@@ -30,7 +30,7 @@ def split_nodes_delimiter(old_nodes:list, delimiter:str, text_type:TextTypes):
 
             start = node.text.index(delimiter) + padding
             if not delimiter in node.text[start:]:
-                raise ValueError(f"Expected closing delimiter \"{delimiter}\" in string {node.text} but found none")
+                raise ValueError(f"Expected closing delimiter \"{delimiter}\" in string \"{node.text}\" but found none")
             stop = start + node.text[start:].index(delimiter)
 
             # Add text before the delimiter to the nodes
@@ -64,10 +64,12 @@ def split_nodes_image(old_nodes:list):
 
         elif images:
             split_text = node.text.split(f"![{images[0][0]}]({images[0][1]})", 1)
+            
             # Add the Text part before the first image
-            nodes.append(
-                TextNode(split_text[0], TextTypes.TEXT)
-            )
+            if len(split_text[0]) > 1:
+                nodes.append(
+                    TextNode(split_text[0], TextTypes.TEXT)
+                )
             # Add the first image
             nodes.append(
                 TextNode(images[0][0], TextTypes.IMAGE, images[0][1])
@@ -99,9 +101,10 @@ def split_nodes_links(old_nodes:list):
         elif links:
             split_text = node.text.split(f"[{links[0][0]}]({links[0][1]})", 1)
             # Add the Text part before the first link
-            nodes.append(
-                TextNode(split_text[0], TextTypes.TEXT)
-            )
+            if len(split_text[0]) > 1:
+                nodes.append(
+                    TextNode(split_text[0], TextTypes.TEXT)
+                )
             # Add the first image
             nodes.append(
                 TextNode(links[0][0], TextTypes.LINK, links[0][1])

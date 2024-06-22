@@ -85,6 +85,11 @@ class TestTextNode(unittest.TestCase):
             TextNode(" and then some trailing text", TextTypes.TEXT, None),
         ])
 
+        image_text_2 = [TextNode("![LOTR image artistmonkeys](/images/rivendell.png)", TextTypes.TEXT)]
+        self.assertEqual(split_nodes_image(image_text_2), [
+            TextNode("LOTR image artistmonkeys", TextTypes.IMAGE, "/images/rivendell.png")
+        ])
+
     def test_split_nodes_link(self):
         link_text = [TextNode('This is text with a [link](https://www.example.com) and [another](https://www.example.com/another) and then some text', TextTypes.TEXT)]
         self.assertEqual(split_nodes_links(link_text), [
@@ -112,4 +117,15 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             text_to_nodes(test_case),
             expected_outcome
+        )
+
+        header_test_case = "## This is the **greatest** header ever"
+        header_test_expected_outcome = [
+            TextNode("## This is the ", TextTypes.TEXT, None),
+            TextNode("greatest", TextTypes.BOLD, None), 
+            TextNode(" header ever", TextTypes.TEXT, None),
+        ]
+        self.assertEqual(
+            text_to_nodes(header_test_case),
+            header_test_expected_outcome
         )

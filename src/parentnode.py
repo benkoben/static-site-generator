@@ -13,7 +13,10 @@ class ParentNode(HtmlNode):
         
         html = f"<{self.tag}>"
         for child in self.children:
-            html += child.to_html()
+            if child != self.children[-1]:
+                html += child.to_html() + "\n"
+            else:
+                html += child.to_html()
 
         html += f"</{self.tag}>"
         return html

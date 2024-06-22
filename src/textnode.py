@@ -47,6 +47,7 @@ class TextNode():
         if self.text_type == TextTypes.IMAGE:
             return LeafNode(
                 tag=self.text_type.value,
+                value=self.text,
                 props={"alt": self.text, "src": self.url} 
             )
         raise TypeError("invalid text type was used")

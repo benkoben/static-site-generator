@@ -4,6 +4,9 @@ from enum import Enum
 from leafnode import LeafNode
 from parentnode import ParentNode
 
+from textnode import TextNode
+from inline_markdown import text_to_nodes
+
 __HEADER_REGEX = r"(?<!#)(#{1,6})\s(.*)?"
 
 class BlockTypes(Enum):
@@ -53,7 +56,12 @@ def header_block_to_html(header_block):
     except IndexError:
         raise ValueError("header_block does not contain a valid markdown header")
     
-    return LeafNode(f"h{header.count('#')}", text)
+    value = list()
+    textnodes = text_to_nodes(text)
+    for node in textnodes:
+        value.append(node.text_node_to_html_node().to_html())
+
+    return LeafNode(f"h{header.count('#')}", ''.join(value))
 
 def code_block_to_html(code_block):
     lines = code_block.split("\n")
@@ -71,7 +79,13 @@ def quote_block_to_html(quote_block):
     for line in quote_block.split("\n"):
         if not line.startswith("> "):
             raise ValueError("quote_block does not contain a valid markdown quotation")
-        children.append(LeafNode(value=line.lstrip("> ")))
+
+        value = list()
+        textnodes = text_to_nodes(line.lstrip("> "))
+        for node in textnodes:
+            value.append(node.text_node_to_html_node().to_html())
+
+        children.append(LeafNode(value='\n'.join(value)))
 
     return ParentNode("blockquote", children)
 
@@ -95,14 +109,19 @@ def ordered_list_block_to_html(ordered_list_block):
 
     return ParentNode("ol", children)
 
-# I 
 def paragraph_block_to_html(paragraph_block):
-    return LeafNode("p", paragraph_block)
+    value = list()
+    textnodes = text_to_nodes(paragraph_block)
+    for node in textnodes:
+        value.append(node.text_node_to_html_node().to_html())
+
+    return LeafNode("p", ''.join(value))
 
 def markdown_to_html_node(markdown):
     children = list()
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
+        
         block_type = block_to_block_type(block)
 
         if block_type == BlockTypes.HEADING:
